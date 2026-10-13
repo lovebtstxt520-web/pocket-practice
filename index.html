@@ -304,6 +304,9 @@ const b64 = u => u.split(",")[1];
 const errHtml = (err, act) => '<div class="errbox">' + esc(t("ai_fail")) + '<div class="errdetail">' + esc(String(err).slice(0, 240)) + "</div></div>" +
   (act ? '<button class="btn sec full" data-act="' + act + '" style="margin:0 0 10px">' + esc(t("retry")) + "</button>" : "");
 
+// shows which AI model answered (small grey text, useful when testing)
+const byLine = by => by ? '<div class="errdetail">' + esc(by) + "</div>" : "";
+
 // ===== SPENDING =====
 function renderStats() {
   const ms = monthStart();
@@ -359,7 +362,7 @@ async function scanReceipt() {
     else ed.aiNote = t("unreadable");
     if (r.merchant) ed.merchant = r.merchant;
     ed.category = r.category || ed.category;
-    ed.scanned = true;
+    ed.scanned = true; ed.by = r.by || "";
   } catch (e) {
     if (ed !== mine) return;
     ed.err = String(e.message || e);
@@ -375,7 +378,7 @@ function renderExp() {
   if (d.scanned) {
     h += '<div class="ai"><b>' + esc(t("ai_items")) + "</b>" +
       (d.items.length ? "<ul>" + d.items.map(x => "<li>" + esc(x.name) + (x.price ? " · " + esc(money(x.price, d.currency)) : "") + "</li>").join("") + "</ul>" : "") +
-      '<div style="margin-top:6px">' + esc(d.aiNote || t("ai_check")) + "</div></div>";
+      '<div style="margin-top:6px">' + esc(d.aiNote || t("ai_check")) + "</div>" + byLine(d.by) + "</div>";
   }
   h += '<div class="two"><div class="fld"><label>' + esc(t("amount")) + " (" + esc(d.currency) + ')</label><input id="eAmt" type="number" min="0" step="0.01" inputmode="decimal" value="' + esc(d.amount) + '"></div>' +
     '<div class="fld"><label>' + esc(t("category")) + '</label><select id="eCat">' + catOptions(d.category) + "</select></div></div>" +
@@ -428,7 +431,7 @@ async function readWish() {
   try {
     const r = await callAI({ mode: "wish", image: b64(mine.full) });
     if (wd !== mine) return;
-    Object.assign(wd, { item: r.item || wd.item, price: r.price || wd.price, currency: r.currency || "THB", store: r.store || "", category: r.category || "shopping", questions: r.questions || [], tip: r.tip || "" });
+    Object.assign(wd, { item: r.item || wd.item, price: r.price || wd.price, currency: r.currency || "THB", store: r.store || "", category: r.category || "shopping", questions: r.questions || [], tip: r.tip || "", by: r.by || "" });
   } catch (e) { if (wd !== mine) return; wd.err = String(e.message || e); }
   wd.step = "form"; renderWish();
 }
@@ -450,7 +453,7 @@ function renderWish() {
     '<div id="wHours">' + hoursText(Number(d.price) || 0) + "</div>";
   if (d.questions.length || d.tip) {
     h += '<div class="ai"><b>' + esc(t("think")) + "</b>" + (d.questions.length ? "<ul>" + d.questions.map(q => "<li>" + esc(q) + "</li>").join("") + "</ul>" : "") +
-      (d.tip ? '<div style="margin-top:6px">' + esc(d.tip) + "</div>" : "") + "</div>";
+      (d.tip ? '<div style="margin-top:6px">' + esc(d.tip) + "</div>" : "") + byLine(d.by) + "</div>";
   }
   h += '<p class="lbl">' + esc(t("cool")) + '</p><div class="seg">' + [24, 48, 72].map(x => '<button data-hours="' + x + '" class="' + (d.hours === x ? "on" : "") + '">' + esc(t("h" + x)) + "</button>").join("") + "</div>" +
     '<button class="btn gold full" data-act="start" style="margin-top:12px">' + esc(t("start_cool")) + "</button>";
@@ -523,7 +526,7 @@ function renderCoach() {
   if (coach && coach.err) { b.innerHTML = errHtml(coach.err); return; }
   if (coach && coach.headline) {
     b.innerHTML = '<p class="hl">' + esc(coach.headline) + "</p>" + (coach.tips && coach.tips.length ? "<ul>" + coach.tips.map(x => "<li>" + esc(x) + "</li>").join("") + "</ul>" : "") +
-      '<p class="muted">' + esc(new Date(coach.ts).toLocaleDateString(LOC[lang], { month: "short", day: "numeric" })) + "</p>";
+      '<p class="muted">' + esc(new Date(coach.ts).toLocaleDateString(LOC[lang], { month: "short", day: "numeric" })) + (coach.by ? " · " + esc(coach.by) : "") + "</p>";
     return;
   }
   b.innerHTML = '<p class="muted" style="margin:0">' + esc(t("coach_none")) + "</p>";
@@ -542,7 +545,7 @@ function weekSummary() {
 }
 $("btnCoach").onclick = async () => {
   coach = { loading: true }; renderCoach(); $("btnCoach").disabled = true;
-  try { const r = await callAI({ mode: "weekly", summary: weekSummary() }); coach = { headline: r.headline, tips: r.tips, ts: Date.now() }; lsSet("pc_coach", coach); }
+  try { const r = await callAI({ mode: "weekly", summary: weekSummary() }); coach = { headline: r.headline, tips: r.tips, ts: Date.now(), by: r.by || "" }; lsSet("pc_coach", coach); }
   catch (e) { coach = { err: String(e.message || e) }; }
   $("btnCoach").disabled = false; renderCoach();
 };
