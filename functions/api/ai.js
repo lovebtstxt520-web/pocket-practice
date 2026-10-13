@@ -1,5 +1,6 @@
 // Cloudflare Pages Function: POST /api/ai
 // Settings (Cloudflare project, Variables and secrets): GEMINI_API_KEY (secret), GEMINI_MODEL (optional), GEMINI_FALLBACK_MODEL (optional)
+// Optional backup from another company: ANTHROPIC_API_KEY (secret), CLAUDE_MODEL (optional, default claude-haiku-5-5)
 //
 // Request JSON: { mode: "receipt" | "wish" | "weekly", lang: "en" | "zh" | "th", image?: base64 jpeg (no data: prefix), summary?: string }
 // Response 200 (receipt): { readable, amount, currency, merchant, category, items:[{name,price}], note }
@@ -37,7 +38,8 @@ const SYSTEM = {
 
 export async function onRequestPost({ request, env }) {
   const key = env.GEMINI_API_KEY;
-  if (!key) return reply(500, { error: 'GEMINI_API_KEY is not set in Cloudflare.' });
+  const claudeKey = env.ANTHROPIC_API_KEY;
+  if (!key && !claudeKey) return reply(500, { error: 'GEMINI_API_KEY is not set in Cloudflare.' });
   let body;
   try { body = await request.json(); } catch (e) { return reply(400, { error: 'Bad request.' }); }
   const mode = ['receipt', 'wish', 'weekly'].includes(body.mode) ? body.mode : null;
@@ -57,7 +59,10 @@ export async function onRequestPost({ request, env }) {
   // tried in order: main model, backup model, then the main model once more (busy spikes are often short)
   const main = env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
   const backup = env.GEMINI_FALLBACK_MODEL || 'gemini-3.8-flash';
-  const queue = main === backup ? [main, main, main] : [main, backup, main];
+  let queue = (main === backup ? [main, main, main] : [main, backup, main]).map((m) => ({ p: 'gemini', m }));
+  // with a Claude key: Gemini once, then Claude (different servers, so a Gemini rush does not affect it), then Gemini backup
+  if (claudeKey) queue = [{ p: 'gemini', m: main }, { p: 'claude', m: env.CLAUDE_MODEL || 'claude-haiku-5-5' }, { p: 'gemini', m: backup }];
+  if (!key) queue = queue.filter((q) => q.p === 'claude');
   const started = Date.now();
   const deadline = started + 50000;
   const notes = [];
@@ -66,38 +71,68 @@ export async function onRequestPost({ request, env }) {
   for (let i = 0; i < queue.length; i++) {
     const left = deadline - Date.now();
     if (left < 3000) break;
+    const q = queue[i];
+    const limit = claudeKey ? (i < queue.length - 1 ? Math.min(left, q.p === 'claude' ? 25000 : 15000) : left)
+      : (i === 0 ? Math.min(left, 30000) : i < queue.length - 1 ? Math.min(left, 12000) : left);
     try {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${queue[i]}:generateContent`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-        signal: AbortSignal.timeout(i === 0 ? Math.min(left, 30000) : i < queue.length - 1 ? Math.min(left, 12000) : left),
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: SYSTEM[mode] }] },
-          contents: [{ parts }],
-          generationConfig: Object.assign({ responseMimeType: 'application/json', temperature: 0.2 },
-            lowThink ? { thinkingConfig: { thinkingLevel: 'low' } } : {})
-        })
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        const msg = (data.error && data.error.message) || 'request failed';
-        console.error('Gemini error', queue[i], res.status, msg);
-        if (res.status === 400 && lowThink && /think/i.test(msg)) { lowThink = false; i--; continue; } // setting not accepted: retry without it
-        notes.push(queue[i] + ' (' + res.status + '): ' + String(msg).slice(0, 90));
-        if (res.status === 429 || res.status === 503 || res.status === 500) { await sleep(1500); continue; }
-        break;
+      let text = '';
+      if (q.p === 'claude') {
+        const content = [];
+        parts.forEach((pt) => {
+          if (pt.inline_data) content.push({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: pt.inline_data.data } });
+          else content.push({ type: 'text', text: pt.text });
+        });
+        content.push({ type: 'text', text: 'Reply with the JSON object only, no other text.' });
+        const res = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-api-key': claudeKey, 'anthropic-version': '2023-06-01' },
+          signal: AbortSignal.timeout(limit),
+          body: JSON.stringify({ model: q.m, max_tokens: 1024, system: SYSTEM[mode], messages: [{ role: 'user', content }] })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          const msg = (data.error && data.error.message) || 'request failed';
+          console.error('Claude error', q.m, res.status, msg);
+          notes.push(q.m + ' (' + res.status + '): ' + String(msg).slice(0, 90));
+          continue;
+        }
+        text = (data.content || []).filter((c) => c.type === 'text').map((c) => c.text).join('');
+      } else {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${q.m}:generateContent`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+          signal: AbortSignal.timeout(limit),
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: SYSTEM[mode] }] },
+            contents: [{ parts }],
+            generationConfig: Object.assign({ responseMimeType: 'application/json', temperature: 0.2 },
+              lowThink ? { thinkingConfig: { thinkingLevel: 'low' } } : {})
+          })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          const msg = (data.error && data.error.message) || 'request failed';
+          console.error('Gemini error', q.m, res.status, msg);
+          if (res.status === 400 && lowThink && /think/i.test(msg)) { lowThink = false; i--; continue; } // setting not accepted: retry without it
+          notes.push(q.m + ' (' + res.status + '): ' + String(msg).slice(0, 90));
+          if (res.status === 429 || res.status === 503 || res.status === 500) { await sleep(claudeKey ? 300 : 1500); continue; }
+          if (claudeKey) continue; // let Claude try anyway
+          break;
+        }
+        const cand = data.candidates && data.candidates[0];
+        text = cand && cand.content && cand.content.parts
+          ? cand.content.parts.filter((p) => p.text && !p.thought).map((p) => p.text).join('') : '';
       }
-      const cand = data.candidates && data.candidates[0];
-      const text = cand && cand.content && cand.content.parts
-        ? cand.content.parts.filter((p) => p.text && !p.thought).map((p) => p.text).join('') : '';
-      if (!text) { notes.push(queue[i] + ': no text'); continue; }
+      if (!text) { notes.push(q.m + ': no text'); continue; }
       let o;
       try { o = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1)); }
-      catch (e) { notes.push(queue[i] + ': unreadable answer'); continue; }
-      return reply(200, clean(mode, o));
+      catch (e) { notes.push(q.m + ': unreadable answer'); continue; }
+      const out = clean(mode, o);
+      out.by = q.m; // which model answered (handy when testing)
+      return reply(200, out);
     } catch (e) {
-      console.error('ai failed', queue[i], e && e.name, e && e.message);
-      notes.push(queue[i] + ': ' + (e && e.name === 'TimeoutError' ? 'no answer in ' + Math.round((Date.now() - started) / 1000) + 's' : String((e && e.message) || e).slice(0, 100)));
+      console.error('ai failed', q.m, e && e.name, e && e.message);
+      notes.push(q.m + ': ' + (e && e.name === 'TimeoutError' ? 'no answer in ' + Math.round((Date.now() - started) / 1000) + 's' : String((e && e.message) || e).slice(0, 100)));
     }
   }
   return reply(502, { error: notes.join(' | ') || 'Gemini is busy. Try again in a moment.' });
