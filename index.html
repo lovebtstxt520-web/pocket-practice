@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4efe4">
+<title>Pocket Coach</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+:root{
+  --bg:#f4efe4;--card:#fffdf8;--ink:#1f2a24;--mute:#6b736c;--line:#e4ddcd;
+  --brand:#1f6f54;--brand-ink:#ffffff;--soft:#e3efe8;--warn:#b4532a;--warn-soft:#f8e6dc;--gold:#c58a1a;--gold-soft:#f7ecd2;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141815;--card:#1d231f;--ink:#e9ece7;--mute:#9aa39c;--line:#2e3631;
+    --brand:#4fb58b;--brand-ink:#0f1612;--soft:#20352b;--warn:#f08b62;--warn-soft:#3a2219;--gold:#e5b34f;--gold-soft:#3a2f17;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141815;--card:#1d231f;--ink:#e9ece7;--mute:#9aa39c;--line:#2e3631;
+  --brand:#4fb58b;--brand-ink:#0f1612;--soft:#20352b;--warn:#f08b62;--warn-soft:#3a2219;--gold:#e5b34f;--gold-soft:#3a2f17;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI","Noto Sans TC","Noto Sans Thai",sans-serif}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:560px;margin:0 auto;padding:16px 16px 96px}
+header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-top:6px}
+h1{margin:0;font-size:28px;letter-spacing:-.02em}
+.sub{margin:2px 0 0;color:var(--mute);font-size:14px}
+.ibtn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;cursor:pointer;flex:none}
+.ibtn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}
+.stat .k{font-size:12px;color:var(--mute)}
+.stat .v{font-size:24px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+.stat.saved{background:var(--gold-soft);border-color:transparent}
+.stat.saved .v{color:var(--gold)}
+.tabs{display:flex;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:14px}
+.tabs button{flex:1;border:0;background:none;padding:9px 6px;border-radius:10px;cursor:pointer;color:var(--mute);font-weight:600;font-size:15px}
+.tabs button.on{background:var(--brand);color:var(--brand-ink)}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.btn{border:0;border-radius:12px;padding:11px 14px;background:var(--brand);color:var(--brand-ink);font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;position:relative;overflow:hidden}
+.btn.sec{background:var(--soft);color:var(--ink)}
+.btn.warn{background:var(--warn-soft);color:var(--warn)}
+.btn.gold{background:var(--gold);color:#fff}
+.btn.full{width:100%;margin-top:8px}
+.btn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.acts .btn{flex:1 1 140px}
+.list{list-style:none;margin:0;padding:0}
+.day{font-size:12px;color:var(--mute);margin:14px 4px 6px}
+.row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:8px;cursor:pointer}
+.dot{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff;flex:none}
+.row .main{flex:1;min-width:0}
+.row .t{margin:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .s{margin:0;font-size:13px;color:var(--mute)}
+.row .amt{font-weight:700;font-variant-numeric:tabular-nums}
+.empty{text-align:center;color:var(--mute);padding:28px 12px}
+.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}
+.wish{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:10px}
+.wish.ready{border-color:var(--gold)}
+.wtop{display:flex;gap:12px}
+.wtop img{width:64px;height:64px;object-fit:cover;border-radius:10px;flex:none;background:var(--soft)}
+.wtop .main{flex:1;min-width:0}
+.wtop .t{margin:0;font-weight:600}
+.wtop .s{margin:2px 0 0;font-size:13px;color:var(--mute)}
+.cd{display:inline-block;margin-top:6px;font-size:12px;padding:3px 8px;border-radius:99px;background:var(--soft)}
+.cd.ready{background:var(--gold-soft);color:var(--gold);font-weight:600}
+.wbtns{display:flex;gap:8px;margin-top:10px}
+.wbtns .btn{flex:1;padding:9px}
+details.hist{margin-top:14px}
+details.hist summary{cursor:pointer;color:var(--mute);font-size:14px;padding:6px 4px}
+.hrow{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:8px 4px;border-bottom:1px solid var(--line)}
+.hrow .tag{font-size:12px;color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+.card h3{margin:0 0 10px;font-size:16px}
+.bar{margin-bottom:10px}
+.bar .l{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px}
+.bar .tr{height:10px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar .fi{height:100%;border-radius:99px}
+.coach .hl{font-weight:600;margin:0 0 8px}
+.coach ul{margin:0;padding-left:20px}
+.coach li{margin-bottom:4px}
+.muted{color:var(--mute);font-size:13px}
+/* sheets */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.ov.open{display:flex}
+.sheet{background:var(--card);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:18px 16px 28px}
+.hd{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.hd h3{margin:0;font-size:20px}
+.fld{margin-bottom:10px}
+.fld label,.lbl{display:block;font-size:12px;color:var(--mute);margin:0 0 3px}
+.fld input,.fld select{width:100%;padding:11px;border-radius:12px;border:1px solid var(--line);background:var(--bg);outline:none}
+.fld input:focus,.fld select:focus{border-color:var(--brand)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.prev{width:100%;max-height:240px;object-fit:contain;border-radius:14px;background:var(--soft);margin-bottom:10px}
+.spin{display:flex;align-items:center;gap:10px;padding:16px 4px;color:var(--mute)}
+.spin i{width:18px;height:18px;border:3px solid var(--soft);border-top-color:var(--brand);border-radius:50%;animation:r 1s linear infinite}
+@keyframes r{to{transform:rotate(360deg)}}
+.errbox{background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:14px}
+.errdetail{margin-top:6px;font-size:11px;opacity:.65;word-break:break-word}
+.ai{background:var(--soft);border-radius:12px;padding:10px 12px;margin-bottom:10px;font-size:14px}
+.ai ul{margin:6px 0 0;padding-left:18px}
+.hours{background:var(--gold-soft);color:var(--gold);border-radius:12px;padding:10px 12px;margin-bottom:10px;font-weight:600}
+.seg{display:flex;gap:6px}
+.seg button{flex:1;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:9px 4px;cursor:pointer}
+.seg button.on{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.qrwrap{text-align:center}
+.qrimg{display:inline-block;background:#fff;padding:10px;border-radius:12px;line-height:0}
+.qrimg svg{width:170px;height:170px}
+.qrurl{font-size:12px;color:var(--mute);margin:6px 0 0;word-break:break-all}
+.qrcorner{position:fixed;right:20px;bottom:20px;z-index:15;background:#fff;color:#222;padding:12px 12px 8px;border-radius:16px;box-shadow:0 6px 24px rgba(0,0,0,.18);text-align:center;font-size:13px}
+.qrcorner .qrimg{padding:0}
+.qrcorner .qrimg svg{width:130px;height:130px}
+.qrcorner button{position:absolute;top:2px;right:6px;border:0;background:none;font-size:18px;color:#888;cursor:pointer}
+@media (max-width:899px){.qrcorner{display:none}}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;opacity:0;transition:.25s;z-index:30;pointer-events:none;font-size:14px}
+.toast.show{opacity:1;transform:translateX(-50%)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>Pocket Coach</h1><p class="sub" data-i18n="app_sub"></p></div>
+    <button class="ibtn" id="btnSettings" aria-label="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="k" data-i18n="month_spent"></div><div class="v" id="vSpent">-</div></div>
+    <div class="stat saved"><div class="k" data-i18n="month_saved"></div><div class="v" id="vSaved">-</div></div>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button data-tab="exp" class="on" data-i18n="tab_exp"></button>
+    <button data-tab="wish" data-i18n="tab_wish"></button>
+    <button data-tab="ana" data-i18n="tab_ana"></button>
+  </div>
+
+  <section id="pExp">
+    <div class="acts">
+      <label class="btn"><span data-i18n="scan_receipt"></span><input type="file" accept="image/*" capture="environment" id="fExpCam"></label>
+      <label class="btn sec"><span data-i18n="from_gallery"></span><input type="file" accept="image/*" id="fExpGal"></label>
+      <button class="btn sec" id="btnManual" data-i18n="add_manual"></button>
+    </div>
+    <div id="expList"></div>
+  </section>
+
+  <section id="pWish" hidden>
+    <div class="acts">
+      <label class="btn gold"><span data-i18n="add_wish"></span><input type="file" accept="image/*" id="fWish"></label>
+    </div>
+    <p class="muted" data-i18n="wish_hint" style="margin:-4px 4px 12px"></p>
+    <div id="wishList"></div>
+  </section>
+
+  <section id="pAna" hidden>
+    <div class="card"><h3 data-i18n="by_cat"></h3><div id="bars"></div></div>
+    <div class="card coach"><h3 data-i18n="coach_title"></h3><div id="coachBody"></div>
+      <button class="btn full" id="btnCoach" data-i18n="coach_btn"></button></div>
+  </section>
+</div>
+
+<!-- expense sheet -->
+<div id="sheetExp" class="ov"><div class="sheet" id="expBody"></div></div>
+<!-- wish sheet -->
+<div id="sheetWish" class="ov"><div class="sheet" id="wishBody"></div></div>
+<!-- settings -->
+<div id="sheetSet" class="ov"><div class="sheet">
+  <div class="hd"><h3 data-i18n="settings"></h3><button class="btn sec" data-close="sheetSet" data-i18n="close"></button></div>
+  <div class="fld"><label data-i18n="language"></label><select id="selLang"></select></div>
+  <div class="fld"><label data-i18n="theme"></label><select id="selTheme"></select></div>
+  <div class="fld"><label data-i18n="wage_label"></label><input id="inWage" type="number" min="0" inputmode="decimal"></div>
+  <p class="muted" data-i18n="wage_hint" style="margin:-4px 0 12px"></p>
+  <p class="lbl" style="margin-top:16px" data-i18n="share"></p>
+  <div class="qrwrap"><div id="qrSet" class="qrimg"></div><p class="qrurl" id="qrUrl"></p></div>
+  <button class="btn warn full" id="btnClear" style="margin-top:18px" data-i18n="clear_all"></button>
+</div></div>
+<div id="qrCorner" class="qrcorner" hidden><button id="qrClose" aria-label="close">&times;</button><div id="qrCornerImg" class="qrimg"></div><div data-i18n="scan_try"></div></div>
+<div id="toast" class="toast"></div>
+
+<script src="qrcode.js"></script>
+<script>
+// ===== TRANSLATIONS (every language must have exactly the same keys) =====
+const T = {
+en:{app_sub:"Track your cash. Pause before you buy.",month_spent:"Cash spent this month",month_saved:"Saved by pausing",tab_exp:"Spending",tab_wish:"Want list",tab_ana:"Insights",
+scan_receipt:"Scan receipt",from_gallery:"Choose photo",add_manual:"Add by hand",add_wish:"Add a screenshot",
+wish_hint:"Want to buy something online? Screenshot it and drop it here first. Decide after the cool-off.",
+empty_exp:"No spending yet",empty_exp_hint:"Take a photo of a receipt, a price tag or a menu.",empty_wish:"Nothing on your want list",empty_wish_hint:"Next time you are about to buy online, screenshot it first.",
+reading:"Reading your photo...",new_exp:"New spending",edit_exp:"Edit spending",amount:"Amount",merchant:"Where",merchant_ph:"e.g. 7-Eleven",category:"Category",date:"Date",note:"Note",save:"Save",cancel:"Cancel",delete:"Delete",
+confirm_delete:"Delete this item?",retry:"Try again",ai_fail:"The AI is busy right now. Wait a few seconds and tap Try again. You can also fill it in yourself.",
+ai_items:"What the AI read",ai_check:"Please check the amount before saving.",unreadable:"I could not find a price in this photo. You can type it in.",
+new_wish:"Pause before buying",item:"Item",price:"Price",think:"Before you decide",cool:"Cool-off time",h24:"24 hours",h48:"48 hours",h72:"3 days",start_cool:"Start cool-off",
+work_hours:"That is about {h} hours of your work.",set_wage:"Set your hourly pay in Settings to see how many hours of work this costs.",
+left_h:"{h} h left",left_m:"{m} min left",ready:"Time to decide",still_want:"Still want it",skip:"Skip it",skip_now:"Skip now",
+saved_toast:"Nice. {a} saved.",bought_toast:"OK, marked as bought.",history:"Decided ({n})",st_skipped:"Skipped",st_bought:"Bought",
+by_cat:"This month by category",no_data:"No spending this month yet.",coach_title:"Weekly coach",coach_btn:"Get this week's tips",coach_none:"Tap the button for tips based on your last 7 days.",coaching:"Thinking about your week...",
+c_food:"Food",c_drink:"Drinks",c_groceries:"Groceries",c_transport:"Transport",c_shopping:"Shopping",c_bills:"Bills",c_health:"Health",c_fun:"Fun",c_other:"Other",
+settings:"Settings",language:"Language",theme:"Theme",th_auto:"Auto",th_light:"Light",th_dark:"Dark",wage_label:"Your hourly pay (optional)",wage_hint:"Used only to show how many hours of work an item costs. Stays on this phone.",
+share:"Share this app (scan with a phone)",scan_try:"Scan to try on your phone",clear_all:"Delete all my data",confirm_clear:"Delete all spending and want-list items on this phone?",close:"Close",saved:"Saved",today:"Today",yesterday:"Yesterday"},
+zh:{app_sub:"記下現金花費，買之前先停一下。",month_spent:"本月現金支出",month_saved:"冷靜期省下",tab_exp:"支出",tab_wish:"想買清單",tab_ana:"分析",
+scan_receipt:"拍收據",from_gallery:"選照片",add_manual:"手動記一筆",add_wish:"加入截圖",
+wish_hint:"想在網路上買東西？先截圖丟進來，冷靜期過了再決定。",
+empty_exp:"還沒有支出紀錄",empty_exp_hint:"拍一張收據、價格牌或菜單試試看。",empty_wish:"想買清單是空的",empty_wish_hint:"下次要網購前，先截圖放進來。",
+reading:"正在讀取照片...",new_exp:"新增支出",edit_exp:"修改支出",amount:"金額",merchant:"在哪裡",merchant_ph:"例如：7-Eleven",category:"類別",date:"日期",note:"備註",save:"儲存",cancel:"取消",delete:"刪除",
+confirm_delete:"要刪除這筆嗎？",retry:"再試一次",ai_fail:"AI 現在比較忙，請稍等幾秒再按一次。你也可以自己填好儲存。",
+ai_items:"AI 讀到的內容",ai_check:"儲存前請確認金額。",unreadable:"這張照片裡找不到價格，可以自己輸入。",
+new_wish:"買之前先停一下",item:"商品",price:"價格",think:"決定之前想一想",cool:"冷靜期",h24:"24 小時",h48:"48 小時",h72:"3 天",start_cool:"開始冷靜期",
+work_hours:"這大約是你工作 {h} 小時的收入。",set_wage:"在設定填入時薪，就能看到這要工作幾小時。",
+left_h:"還剩 {h} 小時",left_m:"還剩 {m} 分鐘",ready:"可以決定了",still_want:"還是想買",skip:"不買了",skip_now:"現在就不買",
+saved_toast:"很好，省下 {a}。",bought_toast:"好，已記為買了。",history:"已決定（{n}）",st_skipped:"不買",st_bought:"已買",
+by_cat:"本月各類別",no_data:"這個月還沒有支出。",coach_title:"每週教練",coach_btn:"看本週建議",coach_none:"按下按鈕，根據你最近 7 天的紀錄給建議。",coaching:"正在分析你這週的花費...",
+c_food:"餐飲",c_drink:"飲料",c_groceries:"日用採買",c_transport:"交通",c_shopping:"購物",c_bills:"帳單",c_health:"醫療保健",c_fun:"娛樂",c_other:"其他",
+settings:"設定",language:"語言",theme:"主題",th_auto:"自動",th_light:"淺色",th_dark:"深色",wage_label:"你的時薪（可不填）",wage_hint:"只用來顯示一件商品等於工作幾小時，資料只存在這支手機。",
+share:"分享 app（用手機掃描）",scan_try:"用手機掃描試用",clear_all:"刪除我的所有資料",confirm_clear:"要刪除這支手機上所有支出和想買清單嗎？",close:"關閉",saved:"已儲存",today:"今天",yesterday:"昨天"},
+th:{app_sub:"จดเงินสดที่ใช้ หยุดคิดก่อนซื้อ",month_spent:"เงินสดที่ใช้เดือนนี้",month_saved:"ประหยัดได้จากการรอ",tab_exp:"รายจ่าย",tab_wish:"อยากได้",tab_ana:"สรุป",
+scan_receipt:"ถ่ายใบเสร็จ",from_gallery:"เลือกรูป",add_manual:"จดเอง",add_wish:"เพิ่มภาพหน้าจอ",
+wish_hint:"อยากซื้อของออนไลน์? แคปหน้าจอมาไว้ที่นี่ก่อน แล้วค่อยตัดสินใจหลังช่วงพัก",
+empty_exp:"ยังไม่มีรายจ่าย",empty_exp_hint:"ลองถ่ายใบเสร็จ ป้ายราคา หรือเมนู",empty_wish:"ยังไม่มีของที่อยากได้",empty_wish_hint:"ครั้งหน้าก่อนซื้อออนไลน์ แคปหน้าจอมาไว้ก่อน",
+reading:"กำลังอ่านรูป...",new_exp:"เพิ่มรายจ่าย",edit_exp:"แก้ไขรายจ่าย",amount:"จำนวนเงิน",merchant:"ที่ไหน",merchant_ph:"เช่น 7-Eleven",category:"หมวด",date:"วันที่",note:"หมายเหตุ",save:"บันทึก",cancel:"ยกเลิก",delete:"ลบ",
+confirm_delete:"ลบรายการนี้หรือไม่",retry:"ลองอีกครั้ง",ai_fail:"ตอนนี้ AI ยุ่งอยู่ รอสักครู่แล้วกดลองอีกครั้ง หรือกรอกเองได้",
+ai_items:"สิ่งที่ AI อ่านได้",ai_check:"ตรวจสอบจำนวนเงินก่อนบันทึก",unreadable:"ไม่พบราคาในรูปนี้ กรอกเองได้",
+new_wish:"หยุดคิดก่อนซื้อ",item:"สินค้า",price:"ราคา",think:"ก่อนตัดสินใจ ลองคิดดู",cool:"ช่วงพัก",h24:"24 ชั่วโมง",h48:"48 ชั่วโมง",h72:"3 วัน",start_cool:"เริ่มช่วงพัก",
+work_hours:"เท่ากับทำงานประมาณ {h} ชั่วโมง",set_wage:"ใส่ค่าจ้างต่อชั่วโมงในการตั้งค่า เพื่อดูว่าต้องทำงานกี่ชั่วโมง",
+left_h:"เหลือ {h} ชม.",left_m:"เหลือ {m} นาที",ready:"ถึงเวลาตัดสินใจ",still_want:"ยังอยากได้",skip:"ไม่ซื้อแล้ว",skip_now:"ไม่ซื้อเลย",
+saved_toast:"เยี่ยม ประหยัดได้ {a}",bought_toast:"บันทึกว่าซื้อแล้ว",history:"ตัดสินใจแล้ว ({n})",st_skipped:"ไม่ซื้อ",st_bought:"ซื้อแล้ว",
+by_cat:"เดือนนี้แยกตามหมวด",no_data:"เดือนนี้ยังไม่มีรายจ่าย",coach_title:"โค้ชประจำสัปดาห์",coach_btn:"ดูคำแนะนำสัปดาห์นี้",coach_none:"กดปุ่มเพื่อรับคำแนะนำจากข้อมูล 7 วันล่าสุด",coaching:"กำลังวิเคราะห์สัปดาห์ของคุณ...",
+c_food:"อาหาร",c_drink:"เครื่องดื่ม",c_groceries:"ของใช้",c_transport:"เดินทาง",c_shopping:"ช้อปปิ้ง",c_bills:"บิล",c_health:"สุขภาพ",c_fun:"บันเทิง",c_other:"อื่นๆ",
+settings:"การตั้งค่า",language:"ภาษา",theme:"ธีม",th_auto:"อัตโนมัติ",th_light:"สว่าง",th_dark:"มืด",wage_label:"ค่าจ้างต่อชั่วโมง (ไม่ใส่ก็ได้)",wage_hint:"ใช้แสดงว่าสินค้าเท่ากับทำงานกี่ชั่วโมงเท่านั้น เก็บไว้ในเครื่องนี้",
+share:"แชร์แอป (สแกนด้วยมือถือ)",scan_try:"สแกนเพื่อลองบนมือถือ",clear_all:"ลบข้อมูลทั้งหมดของฉัน",confirm_clear:"ลบรายจ่ายและรายการอยากได้ทั้งหมดในเครื่องนี้หรือไม่",close:"ปิด",saved:"บันทึกแล้ว",today:"วันนี้",yesterday:"เมื่อวาน"}
+};
+const LANGS = { zh:"繁體中文", en:"English", th:"ไทย" };
+const LOC = { en:"en-US", zh:"zh-TW", th:"th-TH-u-ca-gregory" };
+const CATS = ["food","drink","groceries","transport","shopping","bills","health","fun","other"];
+const CAT_COLOR = { food:"#d9822b", drink:"#8a5a44", groceries:"#3f8f5f", transport:"#2f6fb0", shopping:"#b0457a", bills:"#6b5bb8", health:"#c0453b", fun:"#d4a017", other:"#7a837c" };
+const DAY = 86400000, HOUR = 3600000;
+
+// ===== STATE =====
+const $ = id => document.getElementById(id);
+const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { toast("Storage full"); return false; } };
+let lang = lsGet("pc_lang", (navigator.language || "").startsWith("th") ? "th" : (navigator.language || "").startsWith("zh") ? "zh" : "en");
+let theme = lsGet("pc_theme", "auto");
+let wage = lsGet("pc_wage", 0);
+let exps = lsGet("pc_exp", []);
+let wishes = lsGet("pc_wish", []);
+let coach = lsGet("pc_coach", null);
+let tab = "exp";
+const saveExps = () => lsSet("pc_exp", exps);
+const saveWishes = () => lsSet("pc_wish", wishes);
+
+function t(k, vars) {
+  let s = (T[lang] && T[lang][k]) || T.en[k] || k;
+  if (vars) Object.keys(vars).forEach(v => { s = s.split("{" + v + "}").join(vars[v]); });
+  return s;
+}
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+function money(a, cur) {
+  try { return new Intl.NumberFormat(LOC[lang], { style: "currency", currency: cur || "THB", currencyDisplay: "narrowSymbol", maximumFractionDigits: a % 1 ? 2 : 0 }).format(a || 0); }
+  catch (e) { return (cur || "THB") + " " + (a || 0); }
+}
+const startOfDay = ts => { const d = new Date(ts); d.setHours(0, 0, 0, 0); return d.getTime(); };
+const monthStart = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1).getTime(); };
+const toDateInput = ts => { const d = new Date(ts); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+const fromDateInput = (s, keepTs) => { const p = String(s).split("-").map(Number); if (p.length < 3 || !p[0]) return keepTs || Date.now(); const k = new Date(keepTs || Date.now()); return new Date(p[0], p[1] - 1, p[2], k.getHours(), k.getMinutes()).getTime(); };
+function dayLabel(ts) {
+  const d = startOfDay(ts), today = startOfDay(Date.now());
+  if (d === today) return t("today");
+  if (d === today - DAY) return t("yesterday");
+  return new Date(ts).toLocaleDateString(LOC[lang], { month: "short", day: "numeric", weekday: "short" });
+}
+function toast(msg) { const el = $("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2200); }
+const catDot = c => '<span class="dot" style="background:' + CAT_COLOR[c] + '">' + esc(t("c_" + c).slice(0, lang === "en" ? 2 : 1)) + "</span>";
+const catOptions = sel => CATS.map(c => '<option value="' + c + '"' + (c === sel ? " selected" : "") + ">" + esc(t("c_" + c)) + "</option>").join("");
+
+// ===== PHOTO + AI =====
+function processPhoto(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const draw = (max, q) => {
+        const r = Math.min(1, max / Math.max(img.width, img.height));
+        const c = document.createElement("canvas");
+        c.width = Math.max(1, Math.round(img.width * r)); c.height = Math.max(1, Math.round(img.height * r));
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        return c.toDataURL("image/jpeg", q);
+      };
+      const out = { full: draw(1024, 0.82), thumb: draw(220, 0.6) }; // full goes to the AI, thumb is stored
+      URL.revokeObjectURL(url); resolve(out);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("image")); };
+    img.src = url;
+  });
+}
+async function callAI(payload) {
+  const res = await fetch("/api/ai", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.assign({ lang }, payload)) });
+  const j = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(j.error || ("HTTP " + res.status));
+  return j;
+}
+const b64 = u => u.split(",")[1];
+const errHtml = (err, act) => '<div class="errbox">' + esc(t("ai_fail")) + '<div class="errdetail">' + esc(String(err).slice(0, 240)) + "</div></div>" +
+  (act ? '<button class="btn sec full" data-act="' + act + '" style="margin:0 0 10px">' + esc(t("retry")) + "</button>" : "");
+
+// ===== SPENDING =====
+function renderStats() {
+  const ms = monthStart();
+  const spent = exps.filter(e => e.ts >= ms && e.currency === "THB").reduce((s, e) => s + e.amount, 0);
+  const saved = wishes.filter(w => w.status === "skipped" && w.decided >= ms && w.currency === "THB").reduce((s, w) => s + w.price, 0);
+  $("vSpent").textContent = money(spent, "THB");
+  $("vSaved").textContent = money(saved, "THB");
+}
+function renderExps() {
+  const box = $("expList");
+  if (!exps.length) { box.innerHTML = '<div class="empty"><b>' + esc(t("empty_exp")) + "</b>" + esc(t("empty_exp_hint")) + "</div>"; return; }
+  const sorted = exps.slice().sort((a, b) => b.ts - a.ts);
+  let html = "", last = null;
+  sorted.slice(0, 200).forEach(e => {
+    const d = startOfDay(e.ts);
+    if (d !== last) { html += '<p class="day">' + esc(dayLabel(e.ts)) + "</p>"; last = d; }
+    html += '<div class="row" data-id="' + esc(e.id) + '">' + catDot(e.category) +
+      '<div class="main"><p class="t">' + esc(e.merchant || t("c_" + e.category)) + '</p><p class="s">' + esc(t("c_" + e.category)) + (e.note ? " · " + esc(e.note) : "") + "</p></div>" +
+      '<div class="amt">' + esc(money(e.amount, e.currency)) + "</div></div>";
+  });
+  box.innerHTML = html;
+}
+$("expList").addEventListener("click", ev => { const r = ev.target.closest(".row"); if (r) openExp({ editId: r.dataset.id }); });
+
+let ed = null; // expense draft
+function openExp(opts) {
+  opts = opts || {};
+  if (opts.editId) {
+    const e = exps.find(x => x.id === opts.editId); if (!e) return;
+    ed = { editId: e.id, step: "form", amount: e.amount, currency: e.currency, merchant: e.merchant, category: e.category, ts: e.ts, note: e.note || "", thumb: e.thumb || "", full: "", items: e.items || [], aiNote: "", err: "" };
+  } else {
+    ed = { step: "form", amount: "", currency: "THB", merchant: "", category: "food", ts: Date.now(), note: "", thumb: "", full: "", items: [], aiNote: "", err: "" };
+  }
+  $("sheetExp").classList.add("open");
+  renderExp();
+}
+function closeExp() { $("sheetExp").classList.remove("open"); ed = null; }
+async function expFromPhoto(file) {
+  openExp();
+  try { const p = await processPhoto(file); ed.thumb = p.thumb; ed.full = p.full; }
+  catch (e) { ed.err = "Could not open this photo."; renderExp(); return; }
+  scanReceipt();
+}
+async function scanReceipt() {
+  if (!ed || !ed.full) return;
+  ed.step = "loading"; ed.err = ""; renderExp();
+  const mine = ed;
+  try {
+    const r = await callAI({ mode: "receipt", image: b64(mine.full) });
+    if (ed !== mine) return;
+    ed.items = r.items || []; ed.aiNote = r.note || "";
+    if (r.readable) { ed.amount = r.amount; ed.currency = r.currency || "THB"; }
+    else ed.aiNote = t("unreadable");
+    if (r.merchant) ed.merchant = r.merchant;
+    ed.category = r.category || ed.category;
+    ed.scanned = true;
+  } catch (e) {
+    if (ed !== mine) return;
+    ed.err = String(e.message || e);
+  }
+  ed.step = "form"; renderExp();
+}
+function renderExp() {
+  const d = ed; if (!d) return;
+  let h = '<div class="hd"><h3>' + esc(t(d.editId ? "edit_exp" : "new_exp")) + '</h3><button class="btn sec" data-act="close">' + esc(t("cancel")) + "</button></div>";
+  if (d.thumb) h += '<img class="prev" alt="" src="' + esc(d.full || d.thumb) + '">';
+  if (d.step === "loading") { $("expBody").innerHTML = h + '<div class="spin"><i></i>' + esc(t("reading")) + "</div>"; return; }
+  if (d.err) h += errHtml(d.err, d.full ? "rescan" : "");
+  if (d.scanned) {
+    h += '<div class="ai"><b>' + esc(t("ai_items")) + "</b>" +
+      (d.items.length ? "<ul>" + d.items.map(x => "<li>" + esc(x.name) + (x.price ? " · " + esc(money(x.price, d.currency)) : "") + "</li>").join("") + "</ul>" : "") +
+      '<div style="margin-top:6px">' + esc(d.aiNote || t("ai_check")) + "</div></div>";
+  }
+  h += '<div class="two"><div class="fld"><label>' + esc(t("amount")) + " (" + esc(d.currency) + ')</label><input id="eAmt" type="number" min="0" step="0.01" inputmode="decimal" value="' + esc(d.amount) + '"></div>' +
+    '<div class="fld"><label>' + esc(t("category")) + '</label><select id="eCat">' + catOptions(d.category) + "</select></div></div>" +
+    '<div class="fld"><label>' + esc(t("merchant")) + '</label><input id="eMer" maxlength="60" placeholder="' + esc(t("merchant_ph")) + '" value="' + esc(d.merchant) + '"></div>' +
+    '<div class="two"><div class="fld"><label>' + esc(t("date")) + '</label><input id="eDate" type="date" value="' + esc(toDateInput(d.ts)) + '"></div>' +
+    '<div class="fld"><label>' + esc(t("note")) + '</label><input id="eNote" maxlength="80" value="' + esc(d.note) + '"></div></div>' +
+    '<button class="btn full" data-act="save">' + esc(t("save")) + "</button>" +
+    (d.editId ? '<button class="btn warn full" data-act="del">' + esc(t("delete")) + "</button>" : "");
+  $("expBody").innerHTML = h;
+}
+$("expBody").addEventListener("input", e => {
+  if (!ed) return;
+  const id = e.target.id, v = e.target.value;
+  if (id === "eAmt") ed.amount = v;
+  if (id === "eCat") ed.category = v;
+  if (id === "eMer") ed.merchant = v;
+  if (id === "eDate") ed.ts = fromDateInput(v, ed.ts);
+  if (id === "eNote") ed.note = v;
+});
+$("expBody").addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if (!b || !ed) return;
+  const a = b.dataset.act;
+  if (a === "close") closeExp();
+  if (a === "rescan") scanReceipt();
+  if (a === "save") saveExp();
+  if (a === "del" && confirm(t("confirm_delete"))) { exps = exps.filter(x => x.id !== ed.editId); saveExps(); closeExp(); renderAll(); }
+});
+function saveExp() {
+  const amt = Math.round(Number(ed.amount) * 100) / 100;
+  if (!(amt > 0)) { $("eAmt") && $("eAmt").focus(); return; }
+  const rec = { id: ed.editId || uid(), ts: ed.ts, amount: amt, currency: ed.currency || "THB", merchant: String(ed.merchant || "").trim(), category: CATS.includes(ed.category) ? ed.category : "other", note: String(ed.note || "").trim(), items: ed.items || [], thumb: ed.thumb || "" };
+  if (ed.editId) exps = exps.map(x => x.id === ed.editId ? rec : x); else exps.push(rec);
+  if (!saveExps()) { rec.thumb = ""; saveExps(); }
+  closeExp(); renderAll(); toast(t("saved"));
+}
+
+// ===== WANT LIST =====
+let wd = null; // wish draft
+async function wishFromPhoto(file) {
+  wd = { step: "loading", item: "", price: "", currency: "THB", store: "", category: "shopping", questions: [], tip: "", hours: 48, thumb: "", full: "", err: "" };
+  $("sheetWish").classList.add("open"); renderWish();
+  try { const p = await processPhoto(file); wd.thumb = p.thumb; wd.full = p.full; }
+  catch (e) { wd.err = "Could not open this photo."; wd.step = "form"; renderWish(); return; }
+  readWish();
+}
+async function readWish() {
+  if (!wd) return;
+  wd.step = "loading"; wd.err = ""; renderWish();
+  const mine = wd;
+  try {
+    const r = await callAI({ mode: "wish", image: b64(mine.full) });
+    if (wd !== mine) return;
+    Object.assign(wd, { item: r.item || wd.item, price: r.price || wd.price, currency: r.currency || "THB", store: r.store || "", category: r.category || "shopping", questions: r.questions || [], tip: r.tip || "" });
+  } catch (e) { if (wd !== mine) return; wd.err = String(e.message || e); }
+  wd.step = "form"; renderWish();
+}
+function closeWish() { $("sheetWish").classList.remove("open"); wd = null; }
+function hoursText(price) {
+  if (!(wage > 0)) return '<p class="muted" style="margin:0 0 10px">' + esc(t("set_wage")) + "</p>";
+  const h = price / wage;
+  return '<div class="hours">' + esc(t("work_hours", { h: h < 10 ? Math.round(h * 10) / 10 : Math.round(h) })) + "</div>";
+}
+function renderWish() {
+  const d = wd; if (!d) return;
+  let h = '<div class="hd"><h3>' + esc(t("new_wish")) + '</h3><button class="btn sec" data-act="close">' + esc(t("cancel")) + "</button></div>";
+  if (d.full) h += '<img class="prev" alt="" src="' + esc(d.full) + '">';
+  if (d.step === "loading") { $("wishBody").innerHTML = h + '<div class="spin"><i></i>' + esc(t("reading")) + "</div>"; return; }
+  if (d.err) h += errHtml(d.err, d.full ? "reread" : "");
+  h += '<div class="fld"><label>' + esc(t("item")) + '</label><input id="wItem" maxlength="80" value="' + esc(d.item) + '"></div>' +
+    '<div class="two"><div class="fld"><label>' + esc(t("price")) + " (" + esc(d.currency) + ')</label><input id="wPrice" type="number" min="0" step="0.01" inputmode="decimal" value="' + esc(d.price) + '"></div>' +
+    '<div class="fld"><label>' + esc(t("category")) + '</label><select id="wCat">' + catOptions(d.category) + "</select></div></div>" +
+    '<div id="wHours">' + hoursText(Number(d.price) || 0) + "</div>";
+  if (d.questions.length || d.tip) {
+    h += '<div class="ai"><b>' + esc(t("think")) + "</b>" + (d.questions.length ? "<ul>" + d.questions.map(q => "<li>" + esc(q) + "</li>").join("") + "</ul>" : "") +
+      (d.tip ? '<div style="margin-top:6px">' + esc(d.tip) + "</div>" : "") + "</div>";
+  }
+  h += '<p class="lbl">' + esc(t("cool")) + '</p><div class="seg">' + [24, 48, 72].map(x => '<button data-hours="' + x + '" class="' + (d.hours === x ? "on" : "") + '">' + esc(t("h" + x)) + "</button>").join("") + "</div>" +
+    '<button class="btn gold full" data-act="start" style="margin-top:12px">' + esc(t("start_cool")) + "</button>";
+  $("wishBody").innerHTML = h;
+}
+$("wishBody").addEventListener("input", e => {
+  if (!wd) return;
+  const id = e.target.id, v = e.target.value;
+  if (id === "wItem") wd.item = v;
+  if (id === "wPrice") { wd.price = v; $("wHours").innerHTML = hoursText(Number(v) || 0); }
+  if (id === "wCat") wd.category = v;
+});
+$("wishBody").addEventListener("click", e => {
+  if (!wd) return;
+  const hb = e.target.closest("[data-hours]");
+  if (hb) { wd.hours = Number(hb.dataset.hours); renderWish(); return; }
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  if (b.dataset.act === "close") closeWish();
+  if (b.dataset.act === "reread") readWish();
+  if (b.dataset.act === "start") {
+    const price = Math.round(Number(wd.price) * 100) / 100 || 0;
+    if (!String(wd.item).trim()) { $("wItem").focus(); return; }
+    const w = { id: uid(), ts: Date.now(), until: Date.now() + wd.hours * HOUR, item: String(wd.item).trim(), price: price, currency: wd.currency || "THB", store: wd.store, category: wd.category, questions: wd.questions, tip: wd.tip, thumb: wd.thumb, status: "waiting", decided: 0 };
+    wishes.push(w);
+    if (!saveWishes()) { w.thumb = ""; saveWishes(); }
+    closeWish(); renderAll(); toast(t("saved"));
+  }
+});
+function renderWishes() {
+  const box = $("wishList"), now = Date.now();
+  const waiting = wishes.filter(w => w.status === "waiting").sort((a, b) => a.until - b.until);
+  const done = wishes.filter(w => w.status !== "waiting").sort((a, b) => b.decided - a.decided);
+  let h = "";
+  if (!waiting.length && !done.length) { box.innerHTML = '<div class="empty"><b>' + esc(t("empty_wish")) + "</b>" + esc(t("empty_wish_hint")) + "</div>"; return; }
+  waiting.forEach(w => {
+    const left = w.until - now, ready = left <= 0;
+    const cd = ready ? t("ready") : left >= HOUR ? t("left_h", { h: Math.ceil(left / HOUR) }) : t("left_m", { m: Math.max(1, Math.ceil(left / 60000)) });
+    h += '<div class="wish' + (ready ? " ready" : "") + '" data-id="' + esc(w.id) + '"><div class="wtop">' + (w.thumb ? '<img alt="" src="' + esc(w.thumb) + '">' : "") +
+      '<div class="main"><p class="t">' + esc(w.item) + '</p><p class="s">' + esc(money(w.price, w.currency)) + (w.store ? " · " + esc(w.store) : "") + "</p>" +
+      '<span class="cd' + (ready ? " ready" : "") + '">' + esc(cd) + "</span></div></div>" +
+      '<div class="wbtns">' + (ready ? '<button class="btn sec" data-w="bought">' + esc(t("still_want")) + '</button><button class="btn gold" data-w="skipped">' + esc(t("skip")) + "</button>"
+        : '<button class="btn sec" data-w="skipped">' + esc(t("skip_now")) + "</button>") + "</div></div>";
+  });
+  if (done.length) {
+    h += '<details class="hist"><summary>' + esc(t("history", { n: done.length })) + "</summary>" +
+      done.map(w => '<div class="hrow"><span>' + esc(w.item) + ' <span class="tag">' + esc(t(w.status === "skipped" ? "st_skipped" : "st_bought")) + "</span></span><span>" + esc(money(w.price, w.currency)) + "</span></div>").join("") + "</details>";
+  }
+  box.innerHTML = h;
+}
+$("wishList").addEventListener("click", e => {
+  const b = e.target.closest("[data-w]"); if (!b) return;
+  const id = b.closest(".wish").dataset.id, w = wishes.find(x => x.id === id); if (!w) return;
+  w.status = b.dataset.w; w.decided = Date.now();
+  saveWishes(); renderAll();
+  toast(w.status === "skipped" ? t("saved_toast", { a: money(w.price, w.currency) }) : t("bought_toast"));
+});
+
+// ===== INSIGHTS =====
+function renderBars() {
+  const ms = monthStart(), sums = {};
+  exps.filter(e => e.ts >= ms && e.currency === "THB").forEach(e => { sums[e.category] = (sums[e.category] || 0) + e.amount; });
+  const rows = Object.keys(sums).sort((a, b) => sums[b] - sums[a]);
+  if (!rows.length) { $("bars").innerHTML = '<p class="muted" style="margin:0">' + esc(t("no_data")) + "</p>"; return; }
+  const max = sums[rows[0]];
+  $("bars").innerHTML = rows.map(c => '<div class="bar"><div class="l"><span>' + esc(t("c_" + c)) + "</span><b>" + esc(money(sums[c], "THB")) + '</b></div><div class="tr"><div class="fi" style="width:' + Math.max(3, sums[c] / max * 100) + "%;background:" + CAT_COLOR[c] + '"></div></div></div>').join("");
+}
+function renderCoach() {
+  const b = $("coachBody");
+  if (coach && coach.loading) { b.innerHTML = '<div class="spin"><i></i>' + esc(t("coaching")) + "</div>"; return; }
+  if (coach && coach.err) { b.innerHTML = errHtml(coach.err); return; }
+  if (coach && coach.headline) {
+    b.innerHTML = '<p class="hl">' + esc(coach.headline) + "</p>" + (coach.tips && coach.tips.length ? "<ul>" + coach.tips.map(x => "<li>" + esc(x) + "</li>").join("") + "</ul>" : "") +
+      '<p class="muted">' + esc(new Date(coach.ts).toLocaleDateString(LOC[lang], { month: "short", day: "numeric" })) + "</p>";
+    return;
+  }
+  b.innerHTML = '<p class="muted" style="margin:0">' + esc(t("coach_none")) + "</p>";
+}
+function weekSummary() {
+  const now = Date.now(), w1 = now - 7 * DAY, w2 = now - 14 * DAY;
+  const sum = (from, to) => { const o = {}; let tot = 0, n = 0; exps.forEach(e => { if (e.ts >= from && e.ts < to && e.currency === "THB") { o[e.category] = (o[e.category] || 0) + e.amount; tot += e.amount; n++; } }); return { o, tot, n }; };
+  const a = sum(w1, now + 1), b = sum(w2, w1);
+  const fmt = s => Object.keys(s.o).map(c => c + " " + Math.round(s.o[c])).join(", ") || "none";
+  const skipped = wishes.filter(w => w.status === "skipped" && w.decided >= w1);
+  const bought = wishes.filter(w => w.status === "bought" && w.decided >= w1);
+  return "Currency: THB (cash spending only).\n" +
+    "Last 7 days: total " + Math.round(a.tot) + " in " + a.n + " entries. By category: " + fmt(a) + ".\n" +
+    "Previous 7 days: total " + Math.round(b.tot) + " in " + b.n + " entries. By category: " + fmt(b) + ".\n" +
+    "Want list this week: skipped " + skipped.length + " items worth " + Math.round(skipped.reduce((s, w) => s + w.price, 0)) + ", bought " + bought.length + " items, still waiting " + wishes.filter(w => w.status === "waiting").length + ".";
+}
+$("btnCoach").onclick = async () => {
+  coach = { loading: true }; renderCoach(); $("btnCoach").disabled = true;
+  try { const r = await callAI({ mode: "weekly", summary: weekSummary() }); coach = { headline: r.headline, tips: r.tips, ts: Date.now() }; lsSet("pc_coach", coach); }
+  catch (e) { coach = { err: String(e.message || e) }; }
+  $("btnCoach").disabled = false; renderCoach();
+};
+
+// ===== NAV, SETTINGS =====
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => { tab = b.dataset.tab; renderTabs(); });
+function renderTabs() {
+  document.querySelectorAll(".tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
+  $("pExp").hidden = tab !== "exp"; $("pWish").hidden = tab !== "wish"; $("pAna").hidden = tab !== "ana";
+}
+function onFile(input, fn) { input.addEventListener("change", e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; if (f) fn(f); }); }
+onFile($("fExpCam"), expFromPhoto); onFile($("fExpGal"), expFromPhoto); onFile($("fWish"), wishFromPhoto);
+$("btnManual").onclick = () => openExp();
+$("btnSettings").onclick = () => { $("inWage").value = wage || ""; $("sheetSet").classList.add("open"); };
+document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", () => $(b.dataset.close).classList.remove("open")));
+document.querySelectorAll(".ov").forEach(o => o.addEventListener("click", e => { if (e.target === o) { o.classList.remove("open"); if (o.id === "sheetExp") ed = null; if (o.id === "sheetWish") wd = null; } }));
+$("selLang").onchange = e => { lang = e.target.value; lsSet("pc_lang", lang); applyLang(); };
+$("selTheme").onchange = e => { theme = e.target.value; lsSet("pc_theme", theme); applyTheme(); };
+$("inWage").oninput = e => { wage = Math.max(0, Number(e.target.value) || 0); lsSet("pc_wage", wage); };
+$("btnClear").onclick = () => { if (!confirm(t("confirm_clear"))) return; exps = []; wishes = []; coach = null; saveExps(); saveWishes(); lsSet("pc_coach", null); $("sheetSet").classList.remove("open"); renderAll(); };
+function applyTheme() {
+  if (theme === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", theme);
+  $("selTheme").innerHTML = ["auto", "light", "dark"].map(k => '<option value="' + k + '"' + (k === theme ? " selected" : "") + ">" + esc(t("th_" + k)) + "</option>").join("");
+}
+function applyLang() {
+  document.documentElement.lang = lang === "zh" ? "zh-Hant" : lang;
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
+  $("selLang").innerHTML = Object.keys(LANGS).map(k => '<option value="' + k + '"' + (k === lang ? " selected" : "") + ">" + LANGS[k] + "</option>").join("");
+  applyTheme(); renderAll();
+  if (ed) renderExp();
+  if (wd) renderWish();
+}
+function renderAll() { renderStats(); renderExps(); renderWishes(); renderBars(); renderCoach(); }
+
+// ===== SHARE QR =====
+function initQr() {
+  if (typeof qrcode !== "function") return;
+  const url = location.origin + "/";
+  const qr = qrcode(0, "M"); qr.addData(url); qr.make();
+  const svg = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+  $("qrSet").innerHTML = svg; $("qrUrl").textContent = url; $("qrCornerImg").innerHTML = svg;
+  let off = false; try { off = sessionStorage.getItem("pc_qr_off") === "1"; } catch (e) {}
+  $("qrCorner").hidden = off;
+  $("qrClose").onclick = () => { $("qrCorner").hidden = true; try { sessionStorage.setItem("pc_qr_off", "1"); } catch (e) {} };
+}
+
+// ===== START =====
+applyLang();
+renderTabs();
+initQr();
+setInterval(() => { if (tab === "wish") renderWishes(); }, 60000); // keep countdowns fresh
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+</script>
+</body>
+</html>
