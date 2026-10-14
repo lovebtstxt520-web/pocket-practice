@@ -195,7 +195,7 @@ details.hist summary{cursor:pointer;color:var(--mute);font-size:14px;padding:6px
   </div>
   <p class="lbl" style="margin-top:16px" data-i18n="share"></p>
   <div class="qrwrap"><div id="qrSet" class="qrimg"></div><p class="qrurl" id="qrUrl"></p></div>
-  <p class="muted" style="text-align:center;margin:14px 0 0">version 10</p>
+  <p class="muted" style="text-align:center;margin:14px 0 0">version 11</p>
   <button class="btn warn full" id="btnClear" style="margin-top:18px" data-i18n="clear_all"></button>
 </div></div>
 <div id="qrCorner" class="qrcorner" hidden><button id="qrClose" aria-label="close">&times;</button><div id="qrCornerImg" class="qrimg"></div><div data-i18n="scan_try"></div></div>
@@ -620,7 +620,7 @@ function applyLang() {
   document.documentElement.lang = lang === "zh" ? "zh-Hant" : lang;
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
   $("selLang").innerHTML = Object.keys(LANGS).map(k => '<option value="' + k + '"' + (k === lang ? " selected" : "") + ">" + LANGS[k] + "</option>").join("");
-  applyTheme(); renderAll();
+  applyTheme(); renderAll(); renderBrakes();
   if (ed) renderExp();
   if (wd) renderWish();
 }
