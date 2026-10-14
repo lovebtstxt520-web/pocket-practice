@@ -60,8 +60,8 @@ export async function onRequestPost({ request, env }) {
   const main = env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
   const backup = env.GEMINI_FALLBACK_MODEL || 'gemini-3.8-flash';
   let queue = (main === backup ? [main, main, main] : [main, backup, main]).map((m) => ({ p: 'gemini', m }));
-  // with a Claude key: Gemini once, then Claude (different servers, so a Gemini rush does not affect it), then Gemini backup
-  if (claudeKey) queue = [{ p: 'gemini', m: main }, { p: 'claude', m: env.CLAUDE_MODEL || 'claude-haiku-5-5' }, { p: 'gemini', m: backup }];
+  // with a Claude key: both Gemini models first (free), Claude only as the last resort (paid, different servers)
+  if (claudeKey) queue = [{ p: 'gemini', m: main }, { p: 'gemini', m: backup }, { p: 'claude', m: env.CLAUDE_MODEL || 'claude-haiku-5-5' }];
   if (!key) queue = queue.filter((q) => q.p === 'claude');
   const started = Date.now();
   const deadline = started + 50000;
@@ -72,7 +72,7 @@ export async function onRequestPost({ request, env }) {
     const left = deadline - Date.now();
     if (left < 3000) break;
     const q = queue[i];
-    const limit = claudeKey ? (i < queue.length - 1 ? Math.min(left, q.p === 'claude' ? 25000 : 15000) : left)
+    const limit = claudeKey ? (i === 0 ? Math.min(left, 25000) : i < queue.length - 1 ? Math.min(left, 10000) : left)
       : (i === 0 ? Math.min(left, 30000) : i < queue.length - 1 ? Math.min(left, 12000) : left);
     try {
       let text = '';
