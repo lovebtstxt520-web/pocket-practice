@@ -54,7 +54,7 @@ export async function onRequestPost({ request, env }) {
     if (!body.image) return reply(400, { error: 'No image.' });
     parts.push({ inline_data: { mime_type: 'image/jpeg', data: body.image } });
   }
-  parts.push({ text: 'Write all text fields in ' + LANG[lang] + '.' });
+  parts.push({ text: 'IMPORTANT: write every sentence (note, questions, tip, headline, tips) and item names in ' + LANG[lang] + ', even if the photo is in another language. Keep shop and brand names as printed.' });
 
   // tried in order: main model, backup model, then the main model once more (busy spikes are often short)
   const main = env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
