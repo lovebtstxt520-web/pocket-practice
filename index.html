@@ -101,6 +101,8 @@ details.hist summary{cursor:pointer;color:var(--mute);font-size:14px;padding:6px
 @keyframes r{to{transform:rotate(360deg)}}
 .errbox{background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:14px}
 .src{margin:2px 0 0;font-size:11px;color:var(--mute);opacity:.8}
+.hk{font-size:12px;color:var(--mute);font-weight:500;margin-top:2px}
+.stat.saved .hk{color:var(--gold)}
 .byline{margin-top:8px;font-size:13px;font-weight:600;color:var(--brand)}
 .errdetail{margin-top:6px;font-size:11px;opacity:.65;word-break:break-word}
 .ai{background:var(--soft);border-radius:12px;padding:10px 12px;margin-bottom:10px;font-size:14px}
@@ -130,8 +132,8 @@ details.hist summary{cursor:pointer;color:var(--mute);font-size:14px;padding:6px
   </header>
 
   <div class="stats">
-    <div class="stat"><div class="k" data-i18n="month_spent"></div><div class="v" id="vSpent">-</div></div>
-    <div class="stat saved"><div class="k" data-i18n="month_saved"></div><div class="v" id="vSaved">-</div></div>
+    <div class="stat"><div class="k" data-i18n="month_spent"></div><div class="v" id="vSpent">-</div><div class="hk" id="hSpent"></div></div>
+    <div class="stat saved"><div class="k" data-i18n="month_saved"></div><div class="v" id="vSaved">-</div><div class="hk" id="hSaved"></div></div>
   </div>
 
   <div class="tabs" role="tablist">
@@ -177,7 +179,7 @@ details.hist summary{cursor:pointer;color:var(--mute);font-size:14px;padding:6px
   <p class="muted" data-i18n="wage_hint" style="margin:-4px 0 12px"></p>
   <p class="lbl" style="margin-top:16px" data-i18n="share"></p>
   <div class="qrwrap"><div id="qrSet" class="qrimg"></div><p class="qrurl" id="qrUrl"></p></div>
-  <p class="muted" style="text-align:center;margin:14px 0 0">version 4</p>
+  <p class="muted" style="text-align:center;margin:14px 0 0">version 5</p>
   <button class="btn warn full" id="btnClear" style="margin-top:18px" data-i18n="clear_all"></button>
 </div></div>
 <div id="qrCorner" class="qrcorner" hidden><button id="qrClose" aria-label="close">&times;</button><div id="qrCornerImg" class="qrimg"></div><div data-i18n="scan_try"></div></div>
@@ -201,7 +203,7 @@ saved_toast:"Nice. {a} saved.",bought_toast:"OK, marked as bought.",history:"Dec
 by_cat:"This month by category",no_data:"No spending this month yet.",coach_title:"Weekly coach",coach_btn:"Get this week's tips",coach_none:"Tap the button for tips based on your last 7 days.",coaching:"Thinking about your week...",
 c_food:"Food",c_drink:"Drinks",c_groceries:"Groceries",c_transport:"Transport",c_shopping:"Shopping",c_bills:"Bills",c_health:"Health",c_fun:"Fun",c_other:"Other",
 settings:"Settings",language:"Language",theme:"Theme",th_auto:"Auto",th_light:"Light",th_dark:"Dark",wage_label:"Your hourly pay (optional)",wage_hint:"Used only to show how many hours of work an item costs. Stays on this phone.",
-share:"Share this app (scan with a phone)",scan_try:"Scan to try on your phone",clear_all:"Delete all my data",confirm_clear:"Delete all spending and want-list items on this phone?",close:"Close",saved:"Saved",today:"Today",yesterday:"Yesterday",src_manual:"Entered by hand"},
+share:"Share this app (scan with a phone)",scan_try:"Scan to try on your phone",clear_all:"Delete all my data",confirm_clear:"Delete all spending and want-list items on this phone?",close:"Close",saved:"Saved",today:"Today",yesterday:"Yesterday",src_manual:"Entered by hand",hrs_short:"≈ {h} h of work"},
 zh:{app_sub:"記下現金花費，買之前先停一下。",month_spent:"本月現金支出",month_saved:"冷靜期省下",tab_exp:"支出",tab_wish:"想買清單",tab_ana:"分析",
 scan_receipt:"拍收據",from_gallery:"選照片",add_manual:"手動記一筆",add_wish:"加入截圖",
 wish_hint:"想在網路上買東西？先截圖丟進來，冷靜期過了再決定。",
@@ -216,7 +218,7 @@ saved_toast:"很好，省下 {a}。",bought_toast:"好，已記為買了。",his
 by_cat:"本月各類別",no_data:"這個月還沒有支出。",coach_title:"每週教練",coach_btn:"看本週建議",coach_none:"按下按鈕，根據你最近 7 天的紀錄給建議。",coaching:"正在分析你這週的花費...",
 c_food:"餐飲",c_drink:"飲料",c_groceries:"日用採買",c_transport:"交通",c_shopping:"購物",c_bills:"帳單",c_health:"醫療保健",c_fun:"娛樂",c_other:"其他",
 settings:"設定",language:"語言",theme:"主題",th_auto:"自動",th_light:"淺色",th_dark:"深色",wage_label:"你的時薪（可不填）",wage_hint:"只用來顯示一件商品等於工作幾小時，資料只存在這支手機。",
-share:"分享 app（用手機掃描）",scan_try:"用手機掃描試用",clear_all:"刪除我的所有資料",confirm_clear:"要刪除這支手機上所有支出和想買清單嗎？",close:"關閉",saved:"已儲存",today:"今天",yesterday:"昨天",src_manual:"手動輸入"},
+share:"分享 app（用手機掃描）",scan_try:"用手機掃描試用",clear_all:"刪除我的所有資料",confirm_clear:"要刪除這支手機上所有支出和想買清單嗎？",close:"關閉",saved:"已儲存",today:"今天",yesterday:"昨天",src_manual:"手動輸入",hrs_short:"約工作 {h} 小時"},
 th:{app_sub:"จดเงินสดที่ใช้ หยุดคิดก่อนซื้อ",month_spent:"เงินสดที่ใช้เดือนนี้",month_saved:"ประหยัดได้จากการรอ",tab_exp:"รายจ่าย",tab_wish:"อยากได้",tab_ana:"สรุป",
 scan_receipt:"ถ่ายใบเสร็จ",from_gallery:"เลือกรูป",add_manual:"จดเอง",add_wish:"เพิ่มภาพหน้าจอ",
 wish_hint:"อยากซื้อของออนไลน์? แคปหน้าจอมาไว้ที่นี่ก่อน แล้วค่อยตัดสินใจหลังช่วงพัก",
@@ -231,7 +233,7 @@ saved_toast:"เยี่ยม ประหยัดได้ {a}",bought_toast
 by_cat:"เดือนนี้แยกตามหมวด",no_data:"เดือนนี้ยังไม่มีรายจ่าย",coach_title:"โค้ชประจำสัปดาห์",coach_btn:"ดูคำแนะนำสัปดาห์นี้",coach_none:"กดปุ่มเพื่อรับคำแนะนำจากข้อมูล 7 วันล่าสุด",coaching:"กำลังวิเคราะห์สัปดาห์ของคุณ...",
 c_food:"อาหาร",c_drink:"เครื่องดื่ม",c_groceries:"ของใช้",c_transport:"เดินทาง",c_shopping:"ช้อปปิ้ง",c_bills:"บิล",c_health:"สุขภาพ",c_fun:"บันเทิง",c_other:"อื่นๆ",
 settings:"การตั้งค่า",language:"ภาษา",theme:"ธีม",th_auto:"อัตโนมัติ",th_light:"สว่าง",th_dark:"มืด",wage_label:"ค่าจ้างต่อชั่วโมง (ไม่ใส่ก็ได้)",wage_hint:"ใช้แสดงว่าสินค้าเท่ากับทำงานกี่ชั่วโมงเท่านั้น เก็บไว้ในเครื่องนี้",
-share:"แชร์แอป (สแกนด้วยมือถือ)",scan_try:"สแกนเพื่อลองบนมือถือ",clear_all:"ลบข้อมูลทั้งหมดของฉัน",confirm_clear:"ลบรายจ่ายและรายการอยากได้ทั้งหมดในเครื่องนี้หรือไม่",close:"ปิด",saved:"บันทึกแล้ว",today:"วันนี้",yesterday:"เมื่อวาน",src_manual:"กรอกเอง"}
+share:"แชร์แอป (สแกนด้วยมือถือ)",scan_try:"สแกนเพื่อลองบนมือถือ",clear_all:"ลบข้อมูลทั้งหมดของฉัน",confirm_clear:"ลบรายจ่ายและรายการอยากได้ทั้งหมดในเครื่องนี้หรือไม่",close:"ปิด",saved:"บันทึกแล้ว",today:"วันนี้",yesterday:"เมื่อวาน",src_manual:"กรอกเอง",hrs_short:"≈ ทำงาน {h} ชม."}
 };
 const LANGS = { zh:"繁體中文", en:"English", th:"ไทย" };
 const LOC = { en:"en-US", zh:"zh-TW", th:"th-TH-u-ca-gregory" };
@@ -312,6 +314,10 @@ const byLine = by => '<div class="byline">AI: ' + esc(by || "?") + "</div>";
 
 const srcTag = by => '<p class="src">' + esc(by ? "AI: " + by : t("src_manual")) + "</p>";
 
+// work hours for an amount, always using the current hourly pay (so it updates when pay changes)
+const hrsNum = a => { const h = a / wage; return h < 10 ? Math.round(h * 10) / 10 : Math.round(h); };
+const hrsShort = (a, cur) => wage > 0 && (cur || "THB") === "THB" && a > 0 ? t("hrs_short", { h: hrsNum(a) }) : "";
+
 // ===== SPENDING =====
 function renderStats() {
   const ms = monthStart();
@@ -319,6 +325,7 @@ function renderStats() {
   const saved = wishes.filter(w => w.status === "skipped" && w.decided >= ms && w.currency === "THB").reduce((s, w) => s + w.price, 0);
   $("vSpent").textContent = money(spent, "THB");
   $("vSaved").textContent = money(saved, "THB");
+  $("hSpent").textContent = hrsShort(spent); $("hSaved").textContent = hrsShort(saved);
 }
 function renderExps() {
   const box = $("expList");
@@ -330,7 +337,7 @@ function renderExps() {
     if (d !== last) { html += '<p class="day">' + esc(dayLabel(e.ts)) + "</p>"; last = d; }
     html += '<div class="row" data-id="' + esc(e.id) + '">' + catDot(e.category) +
       '<div class="main"><p class="t">' + esc(e.merchant || t("c_" + e.category)) + '</p><p class="s">' + esc(t("c_" + e.category)) + (e.note ? " · " + esc(e.note) : "") + "</p>" + srcTag(e.by) + "</div>" +
-      '<div class="amt">' + esc(money(e.amount, e.currency)) + "</div></div>";
+      '<div class="amt">' + esc(money(e.amount, e.currency)) + (hrsShort(e.amount, e.currency) ? '<div class="hk">' + esc(hrsShort(e.amount, e.currency)) + "</div>" : "") + "</div></div>";
   });
   box.innerHTML = html;
 }
@@ -444,8 +451,7 @@ async function readWish() {
 function closeWish() { $("sheetWish").classList.remove("open"); wd = null; }
 function hoursText(price) {
   if (!(wage > 0)) return '<p class="muted" style="margin:0 0 10px">' + esc(t("set_wage")) + "</p>";
-  const h = price / wage;
-  return '<div class="hours">' + esc(t("work_hours", { h: h < 10 ? Math.round(h * 10) / 10 : Math.round(h) })) + "</div>";
+  return '<div class="hours">' + esc(t("work_hours", { h: hrsNum(price) })) + "</div>";
 }
 function renderWish() {
   const d = wd; if (!d) return;
@@ -498,7 +504,7 @@ function renderWishes() {
     const left = w.until - now, ready = left <= 0;
     const cd = ready ? t("ready") : left >= HOUR ? t("left_h", { h: Math.ceil(left / HOUR) }) : t("left_m", { m: Math.max(1, Math.ceil(left / 60000)) });
     h += '<div class="wish' + (ready ? " ready" : "") + '" data-id="' + esc(w.id) + '"><div class="wtop">' + (w.thumb ? '<img alt="" src="' + esc(w.thumb) + '">' : "") +
-      '<div class="main"><p class="t">' + esc(w.item) + '</p><p class="s">' + esc(money(w.price, w.currency)) + (w.store ? " · " + esc(w.store) : "") + "</p>" +
+      '<div class="main"><p class="t">' + esc(w.item) + '</p><p class="s">' + esc(money(w.price, w.currency)) + (w.store ? " · " + esc(w.store) : "") + (hrsShort(w.price, w.currency) ? " · " + esc(hrsShort(w.price, w.currency)) : "") + "</p>" +
       '<span class="cd' + (ready ? " ready" : "") + '">' + esc(cd) + "</span>" + srcTag(w.by) + "</div></div>" +
       '<div class="wbtns">' + (ready ? '<button class="btn sec" data-w="bought">' + esc(t("still_want")) + '</button><button class="btn gold" data-w="skipped">' + esc(t("skip")) + "</button>"
         : '<button class="btn sec" data-w="skipped">' + esc(t("skip_now")) + "</button>") + "</div></div>";
@@ -570,7 +576,7 @@ document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click
 document.querySelectorAll(".ov").forEach(o => o.addEventListener("click", e => { if (e.target === o) { o.classList.remove("open"); if (o.id === "sheetExp") ed = null; if (o.id === "sheetWish") wd = null; } }));
 $("selLang").onchange = e => { lang = e.target.value; lsSet("pc_lang", lang); applyLang(); };
 $("selTheme").onchange = e => { theme = e.target.value; lsSet("pc_theme", theme); applyTheme(); };
-$("inWage").oninput = e => { wage = Math.max(0, Number(e.target.value) || 0); lsSet("pc_wage", wage); };
+$("inWage").oninput = e => { wage = Math.max(0, Number(e.target.value) || 0); lsSet("pc_wage", wage); renderAll(); };
 $("btnClear").onclick = () => { if (!confirm(t("confirm_clear"))) return; exps = []; wishes = []; coach = null; saveExps(); saveWishes(); lsSet("pc_coach", null); $("sheetSet").classList.remove("open"); renderAll(); };
 function applyTheme() {
   if (theme === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", theme);
