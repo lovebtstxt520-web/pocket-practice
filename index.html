@@ -100,6 +100,7 @@ details.hist summary{cursor:pointer;color:var(--mute);font-size:14px;padding:6px
 .spin i{width:18px;height:18px;border:3px solid var(--soft);border-top-color:var(--brand);border-radius:50%;animation:r 1s linear infinite}
 @keyframes r{to{transform:rotate(360deg)}}
 .errbox{background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:14px}
+.byline{margin-top:8px;font-size:13px;font-weight:600;color:var(--brand)}
 .errdetail{margin-top:6px;font-size:11px;opacity:.65;word-break:break-word}
 .ai{background:var(--soft);border-radius:12px;padding:10px 12px;margin-bottom:10px;font-size:14px}
 .ai ul{margin:6px 0 0;padding-left:18px}
@@ -175,6 +176,7 @@ details.hist summary{cursor:pointer;color:var(--mute);font-size:14px;padding:6px
   <p class="muted" data-i18n="wage_hint" style="margin:-4px 0 12px"></p>
   <p class="lbl" style="margin-top:16px" data-i18n="share"></p>
   <div class="qrwrap"><div id="qrSet" class="qrimg"></div><p class="qrurl" id="qrUrl"></p></div>
+  <p class="muted" style="text-align:center;margin:14px 0 0">version 3</p>
   <button class="btn warn full" id="btnClear" style="margin-top:18px" data-i18n="clear_all"></button>
 </div></div>
 <div id="qrCorner" class="qrcorner" hidden><button id="qrClose" aria-label="close">&times;</button><div id="qrCornerImg" class="qrimg"></div><div data-i18n="scan_try"></div></div>
@@ -305,7 +307,7 @@ const errHtml = (err, act) => '<div class="errbox">' + esc(t("ai_fail")) + '<div
   (act ? '<button class="btn sec full" data-act="' + act + '" style="margin:0 0 10px">' + esc(t("retry")) + "</button>" : "");
 
 // shows which AI model answered (small grey text, useful when testing)
-const byLine = by => by ? '<div class="errdetail">' + esc(by) + "</div>" : "";
+const byLine = by => '<div class="byline">AI: ' + esc(by || "?") + "</div>";
 
 // ===== SPENDING =====
 function renderStats() {
