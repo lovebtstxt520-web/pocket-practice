@@ -103,6 +103,13 @@ details.hist summary{cursor:pointer;color:var(--mute);font-size:14px;padding:6px
 .src{margin:2px 0 0;font-size:11px;color:var(--mute);opacity:.8}
 .hk{font-size:12px;color:var(--mute);font-weight:500;margin-top:2px}
 .stat.saved .hk{color:var(--gold)}
+.brake .chk{display:flex;gap:10px;align-items:center;padding:8px 2px;font-weight:600}
+.brake .chk input{width:20px;height:20px;accent-color:var(--brand)}
+.brake .gd{margin:0 0 6px 30px;font-size:14px}
+.brake .os{margin:8px 0 4px;font-weight:700;color:var(--ink)}
+.brake ol{margin:0 0 6px;padding-left:18px}
+.brake li{margin-bottom:4px}
+.linkbtn{border:0;background:none;padding:0;color:var(--brand);font-weight:600;text-decoration:underline;cursor:pointer;font-size:inherit}
 .byline{margin-top:8px;font-size:13px;font-weight:600;color:var(--brand)}
 .errdetail{margin-top:6px;font-size:11px;opacity:.65;word-break:break-word}
 .ai{background:var(--soft);border-radius:12px;padding:10px 12px;margin-bottom:10px;font-size:14px}
@@ -155,7 +162,7 @@ details.hist summary{cursor:pointer;color:var(--mute);font-size:14px;padding:6px
     <div class="acts">
       <label class="btn gold"><span data-i18n="add_wish"></span><input type="file" accept="image/*" id="fWish"></label>
     </div>
-    <p class="muted" data-i18n="wish_hint" style="margin:-4px 4px 12px"></p>
+    <p class="muted" style="margin:-4px 4px 12px"><span data-i18n="wish_hint"></span> <button class="linkbtn" id="btnBrake" data-i18n="brake_link"></button></p>
     <div id="wishList"></div>
   </section>
 
@@ -177,9 +184,18 @@ details.hist summary{cursor:pointer;color:var(--mute);font-size:14px;padding:6px
   <div class="fld"><label data-i18n="theme"></label><select id="selTheme"></select></div>
   <div class="fld"><label data-i18n="wage_label"></label><input id="inWage" type="number" min="0" inputmode="decimal"></div>
   <p class="muted" data-i18n="wage_hint" style="margin:-4px 0 12px"></p>
+  <div id="brakeBox" class="brake">
+    <p class="lbl" style="margin-top:16px" data-i18n="brake_title"></p>
+    <label class="chk"><input type="checkbox" checked disabled> <span data-i18n="brake_1"></span></label>
+    <p class="muted gd" data-i18n="brake_1_hint"></p>
+    <label class="chk"><input type="checkbox" id="bk2"> <span data-i18n="brake_2"></span></label>
+    <div class="gd" id="gd2" hidden><p class="os" data-i18n="os_android"></p><ol><li data-i18n="m1"></li><li data-i18n="m2"></li><li data-i18n="m3"></li><li data-i18n="m4"></li><li data-i18n="m6"></li><li data-i18n="m5"></li></ol>
+      <a class="btn sec full" href="https://play.google.com/store/apps/details?id=com.arlosoft.macrodroid" target="_blank" rel="noopener" data-i18n="m_get"></a>
+      <p class="os" data-i18n="os_ios"></p><ol><li data-i18n="i1"></li><li data-i18n="i2"></li><li data-i18n="i3"></li><li id="i4"></li><li data-i18n="i5"></li></ol></div>
+  </div>
   <p class="lbl" style="margin-top:16px" data-i18n="share"></p>
   <div class="qrwrap"><div id="qrSet" class="qrimg"></div><p class="qrurl" id="qrUrl"></p></div>
-  <p class="muted" style="text-align:center;margin:14px 0 0">version 5</p>
+  <p class="muted" style="text-align:center;margin:14px 0 0">version 10</p>
   <button class="btn warn full" id="btnClear" style="margin-top:18px" data-i18n="clear_all"></button>
 </div></div>
 <div id="qrCorner" class="qrcorner" hidden><button id="qrClose" aria-label="close">&times;</button><div id="qrCornerImg" class="qrimg"></div><div data-i18n="scan_try"></div></div>
@@ -203,7 +219,7 @@ saved_toast:"Nice. {a} saved.",bought_toast:"OK, marked as bought.",history:"Dec
 by_cat:"This month by category",no_data:"No spending this month yet.",coach_title:"Weekly coach",coach_btn:"Get this week's tips",coach_none:"Tap the button for tips based on your last 7 days.",coaching:"Thinking about your week...",
 c_food:"Food",c_drink:"Drinks",c_groceries:"Groceries",c_transport:"Transport",c_shopping:"Shopping",c_bills:"Bills",c_health:"Health",c_fun:"Fun",c_other:"Other",
 settings:"Settings",language:"Language",theme:"Theme",th_auto:"Auto",th_light:"Light",th_dark:"Dark",wage_label:"Your hourly pay (optional)",wage_hint:"Used only to show how many hours of work an item costs. Stays on this phone.",
-share:"Share this app (scan with a phone)",scan_try:"Scan to try on your phone",clear_all:"Delete all my data",confirm_clear:"Delete all spending and want-list items on this phone?",close:"Close",saved:"Saved",today:"Today",yesterday:"Yesterday",src_manual:"Entered by hand",hrs_short:"≈ {h} h of work"},
+share:"Share this app (scan with a phone)",scan_try:"Scan to try on your phone",clear_all:"Delete all my data",confirm_clear:"Delete all spending and want-list items on this phone?",close:"Close",saved:"Saved",today:"Today",yesterday:"Yesterday",src_manual:"Entered by hand",hrs_short:"≈ {h} h of work",brake_link:"Set up brakes",brake_title:"Your brakes (pick any)",brake_1:"Screenshot it, then open Pocket",brake_1_hint:"Always on. Screenshot a product or cart, then add it on the Want list.",brake_2:"Phone: get a reminder when a shopping app opens",os_android:"Android (MacroDroid)",os_ios:"iPhone (Shortcuts app, built in)",i1:"Open the Shortcuts app, tap Automation, then +.",i2:"Choose App, pick Shopee and Lazada, tick Is Opened.",i3:"Choose Run Immediately.",i4:"Add the action Show Notification with a short reminder, for example \"Pause first. Really need it?\"",i5:"Tap Done, then open Shopee to test.",m1:"Install the free app MacroDroid from Google Play.",m2:"Add Macro. Trigger: Applications, Application Launched, pick Shopee and Lazada.",m3:"Action: Notification, Display Notification. Title \"Pause first\", text \"Really need it? Put it on your Pocket want list first.\" Leave the click option off.",m4:"Save it and allow the permissions it asks for (usage access).",m6:"To make it pop down from the top: phone Settings, Notifications, App notifications, MacroDroid, Notification categories, \"Notification action\". Choose Alert and turn on Show as pop-up.",m5:"Open Shopee to test. A reminder pops down at the top, then you keep shopping.",m_get:"Get MacroDroid",brake_3:"Computer: Chrome extension for Shopee and Lazada",e1:"Download the extension and unzip it.",e2:"In Chrome, open chrome://extensions and turn on Developer mode.",e3:"Click Load unpacked and choose the unzipped folder.",e4:"On a Shopee or Lazada cart page it will ask you to pause, and can send the item to your Want list.",e_get:"Download extension",from_page:"From the shop page"},
 zh:{app_sub:"記下現金花費，買之前先停一下。",month_spent:"本月現金支出",month_saved:"冷靜期省下",tab_exp:"支出",tab_wish:"想買清單",tab_ana:"分析",
 scan_receipt:"拍收據",from_gallery:"選照片",add_manual:"手動記一筆",add_wish:"加入截圖",
 wish_hint:"想在網路上買東西？先截圖丟進來，冷靜期過了再決定。",
@@ -218,7 +234,7 @@ saved_toast:"很好，省下 {a}。",bought_toast:"好，已記為買了。",his
 by_cat:"本月各類別",no_data:"這個月還沒有支出。",coach_title:"每週教練",coach_btn:"看本週建議",coach_none:"按下按鈕，根據你最近 7 天的紀錄給建議。",coaching:"正在分析你這週的花費...",
 c_food:"餐飲",c_drink:"飲料",c_groceries:"日用採買",c_transport:"交通",c_shopping:"購物",c_bills:"帳單",c_health:"醫療保健",c_fun:"娛樂",c_other:"其他",
 settings:"設定",language:"語言",theme:"主題",th_auto:"自動",th_light:"淺色",th_dark:"深色",wage_label:"你的時薪（可不填）",wage_hint:"只用來顯示一件商品等於工作幾小時，資料只存在這支手機。",
-share:"分享 app（用手機掃描）",scan_try:"用手機掃描試用",clear_all:"刪除我的所有資料",confirm_clear:"要刪除這支手機上所有支出和想買清單嗎？",close:"關閉",saved:"已儲存",today:"今天",yesterday:"昨天",src_manual:"手動輸入",hrs_short:"約工作 {h} 小時"},
+share:"分享 app（用手機掃描）",scan_try:"用手機掃描試用",clear_all:"刪除我的所有資料",confirm_clear:"要刪除這支手機上所有支出和想買清單嗎？",close:"關閉",saved:"已儲存",today:"今天",yesterday:"昨天",src_manual:"手動輸入",hrs_short:"約工作 {h} 小時",brake_link:"設定煞車方式",brake_title:"你的煞車方式（可多選）",brake_1:"截圖後打開 Pocket",brake_1_hint:"一定會有。截圖商品或購物車，到想買清單加入。",brake_2:"手機：打開購物 app 時跳出提醒",os_android:"Android（用 MacroDroid）",os_ios:"iPhone（用內建的「捷徑」App）",i1:"打開「捷徑」App，點下方「自動化」，再點右上角 +。",i2:"選「App」，選擇 Shopee、Lazada，勾「已打開」。",i3:"選「立即執行」。",i4:"動作選「顯示通知」，寫一句提醒，例如「先停一下，真的需要嗎？」",i5:"按完成，打開 Shopee 測試。",m1:"到 Google Play 安裝免費 app「MacroDroid」。",m2:"新增巨集。觸發：Applications → Application Launched → 選 Shopee、Lazada。",m3:"動作：Notification → Display Notification。標題寫「先停一下」，內容寫「真的需要嗎？可以先放進 Pocket 想買清單。」點擊選項不用勾。",m4:"儲存，並允許它要求的權限（使用情況存取）。",m6:"讓提醒從上方彈下來：手機設定 → 通知 → 應用程式通知 → MacroDroid → 通知類別 →「Notification action」，選「提醒」並打開「以彈出式視窗顯示」。",m5:"打開 Shopee 測試，上方會彈出提醒，不會擋住你繼續逛。",m_get:"下載 MacroDroid",brake_3:"電腦：Shopee、Lazada 的 Chrome 外掛",e1:"下載外掛並解壓縮。",e2:"Chrome 網址列輸入 chrome://extensions，打開右上角「開發人員模式」。",e3:"按「載入未封裝項目」，選剛才解壓縮的資料夾。",e4:"在 Shopee 或 Lazada 的購物車頁面會提醒你先停一下，也能把商品直接送進想買清單。",e_get:"下載外掛",from_page:"來自購物網頁"},
 th:{app_sub:"จดเงินสดที่ใช้ หยุดคิดก่อนซื้อ",month_spent:"เงินสดที่ใช้เดือนนี้",month_saved:"ประหยัดได้จากการรอ",tab_exp:"รายจ่าย",tab_wish:"อยากได้",tab_ana:"สรุป",
 scan_receipt:"ถ่ายใบเสร็จ",from_gallery:"เลือกรูป",add_manual:"จดเอง",add_wish:"เพิ่มภาพหน้าจอ",
 wish_hint:"อยากซื้อของออนไลน์? แคปหน้าจอมาไว้ที่นี่ก่อน แล้วค่อยตัดสินใจหลังช่วงพัก",
@@ -233,7 +249,7 @@ saved_toast:"เยี่ยม ประหยัดได้ {a}",bought_toast
 by_cat:"เดือนนี้แยกตามหมวด",no_data:"เดือนนี้ยังไม่มีรายจ่าย",coach_title:"โค้ชประจำสัปดาห์",coach_btn:"ดูคำแนะนำสัปดาห์นี้",coach_none:"กดปุ่มเพื่อรับคำแนะนำจากข้อมูล 7 วันล่าสุด",coaching:"กำลังวิเคราะห์สัปดาห์ของคุณ...",
 c_food:"อาหาร",c_drink:"เครื่องดื่ม",c_groceries:"ของใช้",c_transport:"เดินทาง",c_shopping:"ช้อปปิ้ง",c_bills:"บิล",c_health:"สุขภาพ",c_fun:"บันเทิง",c_other:"อื่นๆ",
 settings:"การตั้งค่า",language:"ภาษา",theme:"ธีม",th_auto:"อัตโนมัติ",th_light:"สว่าง",th_dark:"มืด",wage_label:"ค่าจ้างต่อชั่วโมง (ไม่ใส่ก็ได้)",wage_hint:"ใช้แสดงว่าสินค้าเท่ากับทำงานกี่ชั่วโมงเท่านั้น เก็บไว้ในเครื่องนี้",
-share:"แชร์แอป (สแกนด้วยมือถือ)",scan_try:"สแกนเพื่อลองบนมือถือ",clear_all:"ลบข้อมูลทั้งหมดของฉัน",confirm_clear:"ลบรายจ่ายและรายการอยากได้ทั้งหมดในเครื่องนี้หรือไม่",close:"ปิด",saved:"บันทึกแล้ว",today:"วันนี้",yesterday:"เมื่อวาน",src_manual:"กรอกเอง",hrs_short:"≈ ทำงาน {h} ชม."}
+share:"แชร์แอป (สแกนด้วยมือถือ)",scan_try:"สแกนเพื่อลองบนมือถือ",clear_all:"ลบข้อมูลทั้งหมดของฉัน",confirm_clear:"ลบรายจ่ายและรายการอยากได้ทั้งหมดในเครื่องนี้หรือไม่",close:"ปิด",saved:"บันทึกแล้ว",today:"วันนี้",yesterday:"เมื่อวาน",src_manual:"กรอกเอง",hrs_short:"≈ ทำงาน {h} ชม.",brake_link:"ตั้งค่าเบรก",brake_title:"วิธีเบรกของคุณ (เลือกได้หลายข้อ)",brake_1:"แคปหน้าจอ แล้วเปิด Pocket",brake_1_hint:"เปิดใช้เสมอ แคปหน้าสินค้าหรือตะกร้า แล้วเพิ่มในรายการอยากได้",brake_2:"มือถือ: แจ้งเตือนเมื่อเปิดแอปช้อปปิ้ง",os_android:"Android (MacroDroid)",os_ios:"iPhone (แอปคำสั่งลัด ที่มีในเครื่อง)",i1:"เปิดแอปคำสั่งลัด แตะ \"ระบบอัตโนมัติ\" แล้วแตะ +",i2:"เลือก \"แอป\" เลือก Shopee และ Lazada ติ๊ก \"ถูกเปิด\"",i3:"เลือก \"เรียกใช้ทันที\"",i4:"เพิ่มคำสั่ง \"แสดงการแจ้งเตือน\" พร้อมข้อความเตือน เช่น \"หยุดคิดก่อน จำเป็นจริงไหม\"",i5:"แตะเสร็จสิ้น แล้วลองเปิด Shopee",m1:"ติดตั้งแอปฟรี MacroDroid จาก Google Play",m2:"Add Macro ทริกเกอร์: Applications → Application Launched → เลือก Shopee, Lazada",m3:"แอ็กชัน: Notification → Display Notification หัวข้อ \"หยุดคิดก่อน\" ข้อความ \"จำเป็นจริงไหม ใส่ไว้ในรายการอยากได้ของ Pocket ก่อน\" ไม่ต้องตั้งค่าเมื่อแตะ",m4:"บันทึก และอนุญาตสิทธิ์ที่แอปขอ (การเข้าถึงการใช้งาน)",m6:"ให้แจ้งเตือนเด้งจากด้านบน: การตั้งค่า → การแจ้งเตือน → การแจ้งเตือนของแอป → MacroDroid → หมวดหมู่การแจ้งเตือน → \"Notification action\" เลือก \"แจ้งเตือน\" และเปิด \"แสดงเป็นป๊อปอัป\"",m5:"ลองเปิด Shopee จะมีการแจ้งเตือนเด้งด้านบน แล้วช้อปต่อได้",m_get:"ดาวน์โหลด MacroDroid",brake_3:"คอมพิวเตอร์: ส่วนขยาย Chrome สำหรับ Shopee และ Lazada",e1:"ดาวน์โหลดส่วนขยายแล้วแตกไฟล์",e2:"ใน Chrome เปิด chrome://extensions แล้วเปิด Developer mode",e3:"กด Load unpacked แล้วเลือกโฟลเดอร์ที่แตกไฟล์",e4:"ในหน้าตะกร้า Shopee หรือ Lazada จะเตือนให้หยุดคิด และส่งสินค้าเข้ารายการอยากได้ได้",e_get:"ดาวน์โหลดส่วนขยาย",from_page:"จากหน้าร้านค้า"}
 };
 const LANGS = { zh:"繁體中文", en:"English", th:"ไทย" };
 const LOC = { en:"en-US", zh:"zh-TW", th:"th-TH-u-ca-gregory" };
@@ -439,12 +455,24 @@ async function wishFromPhoto(file) {
 }
 async function readWish() {
   if (!wd) return;
+  if (!wd.full && wd.text) return wishFromText(wd.text);
   wd.step = "loading"; wd.err = ""; renderWish();
   const mine = wd;
   try {
     const r = await callAI({ mode: "wish", image: b64(mine.full) });
     if (wd !== mine) return;
     Object.assign(wd, { item: r.item || wd.item, price: r.price || wd.price, currency: r.currency || "THB", store: r.store || "", category: r.category || "shopping", questions: r.questions || [], tip: r.tip || "", by: r.by || "" });
+  } catch (e) { if (wd !== mine) return; wd.err = String(e.message || e); }
+  wd.step = "form"; renderWish();
+}
+async function wishFromText(info) {
+  wd = { step: "loading", item: info.item || "", price: info.price || "", currency: "THB", store: info.store || "", category: "shopping", questions: [], tip: "", hours: 48, thumb: "", full: "", err: "", text: info };
+  $("sheetWish").classList.add("open"); renderWish();
+  const mine = wd;
+  try {
+    const r = await callAI({ mode: "wish", text: "Item: " + info.item + ". Price: " + (info.price || "unknown") + " THB. Shop: " + (info.store || "") + ". Link: " + (info.url || "") });
+    if (wd !== mine) return;
+    Object.assign(wd, { item: r.item || wd.item, price: wd.price || r.price, store: wd.store || r.store, category: r.category || "shopping", questions: r.questions || [], tip: r.tip || "", by: r.by || "" });
   } catch (e) { if (wd !== mine) return; wd.err = String(e.message || e); }
   wd.step = "form"; renderWish();
 }
@@ -458,7 +486,8 @@ function renderWish() {
   let h = '<div class="hd"><h3>' + esc(t("new_wish")) + '</h3><button class="btn sec" data-act="close">' + esc(t("cancel")) + "</button></div>";
   if (d.full) h += '<img class="prev" alt="" src="' + esc(d.full) + '">';
   if (d.step === "loading") { $("wishBody").innerHTML = h + '<div class="spin"><i></i>' + esc(t("reading")) + "</div>"; return; }
-  if (d.err) h += errHtml(d.err, d.full ? "reread" : "");
+  if (d.err) h += errHtml(d.err, d.full || d.text ? "reread" : "");
+  if (d.text && !d.full) h += '<p class="src" style="margin:0 0 10px">' + esc(t("from_page")) + (d.store ? " · " + esc(d.store) : "") + "</p>";
   h += '<div class="fld"><label>' + esc(t("item")) + '</label><input id="wItem" maxlength="80" value="' + esc(d.item) + '"></div>' +
     '<div class="two"><div class="fld"><label>' + esc(t("price")) + " (" + esc(d.currency) + ')</label><input id="wPrice" type="number" min="0" step="0.01" inputmode="decimal" value="' + esc(d.price) + '"></div>' +
     '<div class="fld"><label>' + esc(t("category")) + '</label><select id="wCat">' + catOptions(d.category) + "</select></div></div>" +
@@ -572,6 +601,11 @@ function onFile(input, fn) { input.addEventListener("change", e => { const f = e
 onFile($("fExpCam"), expFromPhoto); onFile($("fExpGal"), expFromPhoto); onFile($("fWish"), wishFromPhoto);
 $("btnManual").onclick = () => openExp();
 $("btnSettings").onclick = () => { $("inWage").value = wage || ""; $("sheetSet").classList.add("open"); };
+// brake options: which extra brakes the user picked (screenshot is always on)
+let brakes = lsGet("pc_brakes", { macro: false, ext: false });
+function renderBrakes() { $("i4").textContent = t("i4", { url: location.origin + "/" }); $("bk2").checked = !!brakes.macro; $("gd2").hidden = !brakes.macro; }
+$("bk2").onchange = e => { brakes.macro = e.target.checked; lsSet("pc_brakes", brakes); renderBrakes(); };
+$("btnBrake").onclick = () => { $("btnSettings").click(); setTimeout(() => $("brakeBox").scrollIntoView({ behavior: "smooth" }), 50); };
 document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", () => $(b.dataset.close).classList.remove("open")));
 document.querySelectorAll(".ov").forEach(o => o.addEventListener("click", e => { if (e.target === o) { o.classList.remove("open"); if (o.id === "sheetExp") ed = null; if (o.id === "sheetWish") wd = null; } }));
 $("selLang").onchange = e => { lang = e.target.value; lsSet("pc_lang", lang); applyLang(); };
@@ -607,6 +641,15 @@ function initQr() {
 // ===== START =====
 applyLang();
 renderTabs();
+renderBrakes();
+(function fromLink() {
+  const q = new URLSearchParams(location.search);
+  if (q.get("wish") !== "1") return;
+  history.replaceState(null, "", location.pathname);
+  tab = "wish"; renderTabs();
+  const price = Number(String(q.get("price") || "").replace(/[^0-9.]/g, "")) || "";
+  wishFromText({ item: (q.get("item") || "").slice(0, 80), price: price, store: (q.get("store") || "").slice(0, 40), url: (q.get("url") || "").slice(0, 300) });
+})();
 initQr();
 setInterval(() => { if (tab === "wish") renderWishes(); }, 60000); // keep countdowns fresh
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
